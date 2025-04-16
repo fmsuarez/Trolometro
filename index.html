@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troloemtro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f0f0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #ff5722;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .person-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .person-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .counter {
+            background-color: #ff5722;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .increment-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        .spinning-image {
+            width: 445px;
+            height: 445px;
+            background-color: #ff5722;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            animation: spin 3s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        .bouncing-text {
+            position: absolute;
+            color: yellow;
+            font-size: 24px;
+            font-weight: bold;
+            white-space: nowrap;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            user-select: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .person-item {
+                padding: 10px;
+            }
+            
+            .person-name {
+                font-size: 1rem;
+            }
+            
+            .spinning-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .bouncing-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Troloemtro</h1>
+    
+    <div class="container">
+        <div class="person-item">
+            <div class="person-name">Franco</div>
+            <div class="counter">0</div>
+            <button class="increment-btn">+</button>
+        </div>
+        
+        <div class="person-item">
+            <div class="person-name">Adrian</div>
+            <div class="counter">0</div>
+            <button class="increment-btn">+</button>
+        </div>
+        
+        <div class="person-item">
+            <div class="person-name">Nicolas</div>
+            <div class="counter">0</div>
+            <button class="increment-btn">+</button>
+        </div>
+        
+        <div class="person-item">
+            <div class="person-name">Lucas</div>
+            <div class="counter">0</div>
+            <button class="increment-btn">+</button>
+        </div>
+    </div>
+    
+    <div class="popup">
+        <div class="spinning-image"><img src="conilas.jpg"></div>
+    </div>
+    
+    <!-- Audio element para reproducir música -->
+    <audio id="troloAudio" loop>
+        <source src="cancion.mp3" type="audio/mp3">
+        Trolo
+    </audio>
+    
+    <script>
+        // Frases para los textos rebotantes
+        const phrases = [
+            "MIRA SI TE LO VOY A HACER GRATIS", 
+            "PEDAZO DE TROLO", 
+            "CONILAS PUTO"
+        ];
+        
+        // Crear elementos de texto rebotantes
+        for (let i = 0; i < phrases.length; i++) {
+            const bouncingText = document.createElement('div');
+            bouncingText.classList.add('bouncing-text');
+            bouncingText.textContent = phrases[i];
+            document.querySelector('.popup').appendChild(bouncingText);
+        }
+        
+        // Obtener el elemento de audio
+        const audio = document.getElementById('troloAudio');
+        
+        // Obtener todos los botones de incremento
+        const incrementButtons = document.querySelectorAll('.increment-btn');
+        
+        // Agregar evento a cada botón
+        incrementButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Incrementar el contador
+                const counterElement = this.previousElementSibling;
+                let count = parseInt(counterElement.textContent);
+                counterElement.textContent = count + 1;
+                
+                // Mostrar el popup
+                showPopup();
+                
+                // Reproducir audio
+                playAudio();
+            });
+        });
+        
+        // Función para reproducir audio
+        function playAudio() {
+            // Reiniciar el audio si ya está reproduciéndose
+            audio.currentTime = 0;
+            
+            // Reproducir audio
+            audio.play().catch(error => {
+                console.log("Error al reproducir audio:", error);
+                
+                // Muchos navegadores requieren interacción del usuario para reproducir audio
+                // Creamos un botón temporal para que el usuario inicie la reproducción
+                if (!document.getElementById('audioPermissionBtn')) {
+                    const permissionBtn = document.createElement('button');
+                    permissionBtn.id = 'audioPermissionBtn';
+                    permissionBtn.textContent = 'Tocar música';
+                    permissionBtn.style.position = 'fixed';
+                    permissionBtn.style.top = '50%';
+                    permissionBtn.style.left = '50%';
+                    permissionBtn.style.transform = 'translate(-50%, -50%)';
+                    permissionBtn.style.zIndex = '200';
+                    permissionBtn.style.padding = '10px 20px';
+                    permissionBtn.style.backgroundColor = '#ff5722';
+                    permissionBtn.style.color = 'white';
+                    permissionBtn.style.border = 'none';
+                    permissionBtn.style.borderRadius = '5px';
+                    permissionBtn.style.cursor = 'pointer';
+                    
+                    permissionBtn.addEventListener('click', function() {
+                        audio.play();
+                        this.remove();
+                    });
+                    
+                    document.body.appendChild(permissionBtn);
+                }
+            });
+        }
+        
+        // Función para mostrar el popup y activar las animaciones
+        function showPopup() {
+            const popup = document.querySelector('.popup');
+            popup.style.display = 'flex';
+            
+            // Inicializar las posiciones y velocidades de los textos rebotantes
+            const bouncingTexts = document.querySelectorAll('.bouncing-text');
+            
+            bouncingTexts.forEach((text, index) => {
+                // Posición inicial aleatoria
+                const x = Math.random() * (window.innerWidth - 300);
+                const y = Math.random() * (window.innerHeight - 100);
+                
+                // Velocidad aleatoria
+                const speedX = (Math.random() * 5) + 2;
+                const speedY = (Math.random() * 5) + 2;
+                
+                // Dirección aleatoria
+                const directionX = Math.random() > 0.5 ? 1 : -1;
+                const directionY = Math.random() > 0.5 ? 1 : -1;
+                
+                // Establecer datos personalizados
+                text.dataset.x = x;
+                text.dataset.y = y;
+                text.dataset.speedX = speedX * directionX;
+                text.dataset.speedY = speedY * directionY;
+                
+                // Colocar el texto en su posición inicial
+                text.style.left = x + 'px';
+                text.style.top = y + 'px';
+            });
+            
+            // Iniciar la animación de rebote
+            startBouncing();
+        }
+        
+        let animationFrameId = null;
+        
+        // Función para animar los textos rebotantes
+        function startBouncing() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            const bouncingTexts = document.querySelectorAll('.bouncing-text');
+            const popup = document.querySelector('.popup');
+            
+            function animate() {
+                bouncingTexts.forEach(text => {
+                    // Obtener posición y velocidad actuales
+                    let x = parseFloat(text.dataset.x);
+                    let y = parseFloat(text.dataset.y);
+                    let speedX = parseFloat(text.dataset.speedX);
+                    let speedY = parseFloat(text.dataset.speedY);
+                    
+                    // Actualizar posición
+                    x += speedX;
+                    y += speedY;
+                    
+                    // Comprobar colisiones con los bordes
+                    if (x <= 0 || x >= window.innerWidth - text.offsetWidth) {
+                        speedX = -speedX;
+                    }
+                    
+                    if (y <= 0 || y >= window.innerHeight - text.offsetHeight) {
+                        speedY = -speedY;
+                    }
+                    
+                    // Actualizar datos
+                    text.dataset.x = x;
+                    text.dataset.y = y;
+                    text.dataset.speedX = speedX;
+                    text.dataset.speedY = speedY;
+                    
+                    // Actualizar posición visual
+                    text.style.left = x + 'px';
+                    text.style.top = y + 'px';
+                });
+                
+                // Continuar la animación indefinidamente (ya no hay botón para cerrar)
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        // Ajustar animación cuando cambia el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            if (document.querySelector('.popup').style.display !== 'none') {
+                const bouncingTexts = document.querySelectorAll('.bouncing-text');
+                
+                bouncingTexts.forEach(text => {
+                    // Colocar el texto dentro de los límites si se sale
+                    let x = parseFloat(text.dataset.x);
+                    let y = parseFloat(text.dataset.y);
+                    
+                    if (x > window.innerWidth - text.offsetWidth) {
+                        x = window.innerWidth - text.offsetWidth;
+                        text.dataset.x = x;
+                    }
+                    
+                    if (y > window.innerHeight - text.offsetHeight) {
+                        y = window.innerHeight - text.offsetHeight;
+                        text.dataset.y = y;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
